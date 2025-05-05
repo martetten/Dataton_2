@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  text_classifier:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app.py:/app/app.py
+      - ./templates:/app/templates
+    restart: unless-stopped
