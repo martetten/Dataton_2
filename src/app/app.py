@@ -37,9 +37,8 @@ print(f"Модель загружена успешно! Количество к�
 @app.route('/', methods=['GET', 'POST'])
 def home():
     prediction = None
-    text = ""
     if request.method == 'POST':
-        text = request.form['text']
+        text = request.form.get('text', '')
         if text:
             # Делаем предсказание
             prediction = predict_text(text,
@@ -48,7 +47,7 @@ def home():
                                       device=device,
                                       mlb=mlb)
 
-    return render_template('index.html', prediction=prediction)
+    return render_template('index.html', prediction=prediction, text=text)
 
 
 if __name__ == '__main__':
