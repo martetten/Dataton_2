@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Классификатор текста</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="static/favicon-32x32.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border: none;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+        }
+        .btn-primary {
+            border-radius: 10px;
+            padding: 10px 20px;
+            background-color: #7a73fc;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #746dfc;
+        }
+        .btn-primary:disabled {
+            background-color: #cccccc;
+        }
+        .result-card {
+            background-color: rgba(115, 109, 245, 0.1);
+            border-left: 4px solid #7a73fc;
+        }
+        .word-count {
+            font-size: 0.8rem;
+            color: #6c757d;
+            text-align: right;
+            margin-top: 0.25rem;
+        }
+        .word-count.invalid {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card p-4">
+                    <div class="card-body">
+                        <h1 class="card-title text-center mb-4">📋 Тематический классификатор текстов</h1>
+                        <p class="text-center mb-2">Возможные тематики: спорт, юмор, реклама, соцсети, политика, личная жизнь</p>
+                        <p class="text-center text-muted mb-5">Текст может относиться к нескольким тематикам или не относиться ни к одной из заданных</p>
+                        
+                        <form method="POST" id="textForm">
+                            <div class="mb-3">
+                                <textarea 
+                                    class="form-control" 
+                                    name="text" 
+                                    rows="5"
+                                    placeholder="Введите текст (от 2 до 30 слов)..." 
+                                    required></textarea>
+                                <!-- <div class="word-count" id="wordCounter" aria-live="polite">0 слов</div> -->
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg" id="mySubmitButton">
+                                    📰 Классифицировать
+                                </button>
+                            </div>
+                        </form>
+
+                        {% if prediction %}
+                        <div class="result-card mt-4 p-3 rounded">
+                            <h3 class="h5 mb-2">Результат классификации:</h3>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-primary fs-6 p-2 me-2">{{ prediction }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
