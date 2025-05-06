@@ -36,7 +36,7 @@
 
 ## Реализация проекта
 **Стек технологий**:  
-- Python
+- Python3.11
 - PyTorch
 - Docker
 - Flask
