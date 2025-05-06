@@ -91,5 +91,5 @@ target/
 # Virtual environment
 venv/
 
-# HEAVY MODELS
-models/
+# Deprecated Scripts
+src/scripts/Dataton2_GradSeekers.py
