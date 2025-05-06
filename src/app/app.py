@@ -1,18 +1,20 @@
+import os.path
 import pickle
 
 import torch
 from flask import Flask, render_template, request
 from transformers import BertForSequenceClassification, BertTokenizer
 
-from src.app.utils import predict_text
+from utils import predict_text
 
 app = Flask(__name__)
 
 # Загрузка модели при запуске приложения
 print("Загрузка модели...")
-model_path = '../../models/rubert_hackothon'
-tokenizer_path = '../../models/rubert_hackothon_tokenizer'
-mlb_path = '../../models/label_binarizer.pkl'
+
+model_path = os.path.join('..', '..', 'models', 'rubert_hackothon')
+tokenizer_path = os.path.join('..', '..', 'models', 'rubert_hackothon_tokenizer')
+mlb_path = os.path.join('..', '..', 'models', 'label_binarizer.pkl')
 
 # Загружаем токенайзер и модель
 tokenizer = BertTokenizer.from_pretrained(tokenizer_path)
@@ -37,11 +39,13 @@ print(f"Модель загружена успешно! Количество к�
 @app.route('/', methods=['GET', 'POST'])
 def home():
     prediction = None
+    text = ''
     if request.method == 'POST':
         text = request.form.get('text', '')
         if text:
             # Делаем предсказание
             prediction = predict_text(text,
+                                      threshold=0.3,
                                       tokenizer=tokenizer,
                                       model=model,
                                       device=device,

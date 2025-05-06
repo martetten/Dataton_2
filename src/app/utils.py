@@ -11,7 +11,7 @@ CLASS_MAPPING = {
 }
 
 
-def predict_text(text, threshold=0.25, max_len=512,
+def predict_text(text, threshold=0.35, max_len=512,
                  tokenizer=None,
                  model=None,
                  device=None,
@@ -42,7 +42,7 @@ def predict_text(text, threshold=0.25, max_len=512,
         logits = outputs.logits
         probs = torch.sigmoid(logits)
         predictions = (probs >= threshold).cpu().numpy()
-
+    print(probs)
     # Преобразование в индексы классов
     pred_indices = np.where(predictions[0])[0]
 
@@ -53,9 +53,6 @@ def predict_text(text, threshold=0.25, max_len=512,
 
         # Добавим отладочную информацию
         print(f"Предсказанные индексы: {pred_indices}")
-        print(f"Доступные классы: {mlb.classes_}")
-        print(f"Количество классов: {len(mlb.classes_)}")
-
         # Проверка индексов и получение имен классов
         try:
             pred_classes = [int(mlb.classes_[idx]) for idx in pred_indices]
@@ -71,4 +68,4 @@ def predict_text(text, threshold=0.25, max_len=512,
             # В случае ошибки возвращаем индексы (для отладки)
             return [f"Класс #{idx}" for idx in pred_indices]
 
-    return []
+    return "Класс не определён"

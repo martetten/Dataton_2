@@ -6,6 +6,6 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./app.py:/app/app.py
-      - ./templates:/app/templates
+      - ./src/app/app.py:/app/src/app/app.py
+      - ./src/app/templates:/app/src/app/templates
     restart: unless-stopped
