@@ -55,24 +55,93 @@
 
 ## Инструкция для запуска
 
-### Запуск
+!!!__**Предварительно необходимо добавить модели обученные в результате выполнения
+скрипта [bert_train_test.py](src%2Fscripts%2Fbert_train_test.py) или ноутбука [bert_train_test.ipynb](notebooks%2Fbert_train_test.ipynb) в папку models**__ !!!
+
+### I. Запуск приложения
+#### Вариант 1
+
+Находясь в корневой директории проекта 
+
+Создать виртуальное окружение
+
+```bash
+python -m venv .venv
+```
+
+Активировать виртуальное окружение (Пример активации для linux)
+```bash
+source .venv/bin/activate
+```
+
+Для Windows
+
+```bash
+.venv/Scripts/activate
+```
+
 
 Установить зависимости
-```python
+```bash
 pip install -r requirements.txt
 ```
-
-Поднять контейнер
-```bash
-docker compose up -d
-```
-
 Запустить Flask приложения  
 
 ```bash
 cd src/app/
 python app.py
 ```
+#### Вариант 2
+
+Поднять контейнер с приложением
+```bash
+docker compose up -d
+```
+### II. Запуск скриптов
+
+Находясь в корневой директории проекта 
+
+Создать виртуальное окружение
+
+```bash
+python -m venv .venv
+```
+
+Активировать виртуальное окружение (Пример активации для linux)
+```bash
+source .venv/bin/activate
+```
+
+Для Windows
+
+```bash
+.venv/Scripts/activate
+```
+
+
+Установить зависимости
+```bash
+pip install -r requirements.txt
+```
+Все скрипты лежат в папке src/scripts
+
+Для запуска скрипта через CLI необходимо из корневой директории проекта ввести команду
+
+```bash
+cd src/scripts
+python <Название файла>
+```
+
+### Описание скриптов
+
+[bert_train_test.py](src%2Fscripts%2Fbert_train_test.py) - Скрипт подготовки датасета и обучения на нем
+модели RuBERT для целей мультиметочной классификации. По итогам обучения в папке models появляются необходимые 
+модели для запуска приложения.
+
+
+
+
+
 
 ## Результат
 Приложение с использованием предобученной модели машинного обучения, которое дает возможность пользователю определить тематику введенного текста (от 2 до 30 слов): спорт, юмор, реклама, соцсети, политика, личная жизнь.
@@ -118,16 +187,12 @@ Project Organization
 
 ```
 Dataton2/
-├── LICENSE     
-├── README.md                  
-├── Makefile                     # Makefile with commands like `make data` or `make train`                   
-├── configs                      # Config files (models and training hyperparameters)
-│   └── model1.yaml              
-│
+├── docker-compose.yml
+├── Dockerfile     
+├── README.md
+├── .dockerignore
+├── .gitignore                  
 ├── data                         
-│   ├── external                 # Data from third party sources.
-│   ├── interim                  # Intermediate data that has been transformed.
-│   ├── processed                # The final, canonical data sets for modeling.
 │   └── raw                      # The original, immutable data dump.
 │
 ├── models                       # Trained and serialized models.
@@ -136,35 +201,19 @@ Dataton2/
 │
 ├── requirements.txt             # The requirements file for reproducing the analysis environment.
 └── src                          # Source code for use in this project.
-    ├── __init__.py              # Makes src a Python module.
-    │
-    ├── data                     # Data engineering scripts.
-    │   ├── build_features.py    
-    │   ├── cleaning.py          
-    │   ├── ingestion.py         
-    │   ├── labeling.py          
-    │   ├── splitting.py         
-    │   └── validation.py        
-    │
+    ├── __init__.py              # Makes src a Python module.     
     ├── app                     # Flask app.
     │   ├── static  
     │   │   └── favicon-32x32.png
     │   ├── templates    
     │   │   └── index.html  
-    │   └── app.py   
+    │   └── app.py
+    │   └── utils.py     
     │
-    ├── models                   # ML model engineering (a folder for each model).
-    │   └── model1      
-    │       ├── dataloader.py    
-    │       ├── hyperparameters_tuning.py 
-    │       ├── model.py         
-    │       ├── predict.py       
-    │       ├── preprocessing.py 
-    │       └── train.py         
-    │
-    └── visualization        # Scripts to create exploratory and results oriented visualizations.
-        ├── evaluation.py        
-        └── exploration.py       
+    ├── scripts              
+    │   ├── bert_train_test.py
+    │   ├──     
+    │   └── 
 ```
 
 
