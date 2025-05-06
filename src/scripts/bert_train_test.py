@@ -1,20 +1,30 @@
+import os
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MultiLabelBinarizer
+import pickle
+import re
 import emoji
+import inflect
 import nltk
-from transformers import BertTokenizer, BertModel
+from nltk.corpus import stopwords
+from nltk.stem.snowball import RussianStemmer
 import torch
-from sklearn.cluster import KMeans
+from torch.optim import AdamW
+from torch.utils.data import DataLoader
+from transformers import BertForSequenceClassification, BertTokenizer
+from sklearn.metrics import f1_score
 
-df1 = pd.read_csv('../../data/raw/1.csv')
-df2 = pd.read_csv('../../data/raw/2.csv')
-df3 = pd.read_csv('../../data/raw/3.csv')
-df4 = pd.read_csv('../../data/raw/4.csv')
-df5 = pd.read_csv('../../data/raw/5.csv')
-df6 = pd.read_csv('../../data/raw/6.csv')
+from torch.utils.data import Dataset
+
+
+df1 = pd.read_csv(os.path.join('..', '..', 'data', 'raw', '1.csv'))
+df2 = pd.read_csv(os.path.join('..', '..', 'data', 'raw', '2.csv'))
+df3 = pd.read_csv(os.path.join('..', '..', 'data', 'raw', '3.csv'))
+df4 = pd.read_csv(os.path.join('..', '..', 'data', 'raw', '4.csv'))
+df5 = pd.read_csv(os.path.join('..', '..', 'data', 'raw', '5.csv'))
+df6 = pd.read_csv(os.path.join('..', '..', 'data', 'raw', '6.csv'))
 
 print(df1.info())
 print(df2.info())
@@ -50,17 +60,11 @@ result_df = df[['text', 'class']]
 
 # Выводим результат
 print(result_df)
-# Сохранение результата в файл
-# result_df.to_csv('объединенный_датасет.csv', index=False)
 
-import re
-import emoji
-import inflect
-import nltk
+
 nltk.download('stopwords')
 nltk.download('wordnet')
-from nltk.corpus import stopwords
-from nltk.stem.snowball import RussianStemmer
+
 def clean_text(text):
     text = base_clean_text(text)
 
@@ -100,15 +104,6 @@ def stem_russian_text(text):
         else:
             stemmed_words.append(word)
     return ' '.join(stemmed_words)
-
-import torch
-from sklearn.metrics import accuracy_score
-from torch.optim import AdamW
-from torch.utils.data import DataLoader
-from transformers import BertForSequenceClassification, BertTokenizer
-from sklearn.metrics import f1_score, precision_score, recall_score
-
-from torch.utils.data import Dataset
 class CustomDataset(Dataset):
     def __init__(self, encodings, labels):
         self.encodings = encodings
@@ -337,16 +332,6 @@ class BertClassifier:
         return result
 
 
-# In[8]:
-
-
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import MultiLabelBinarizer
-import pickle
-
-
 df = result_df
 # Проверка данных
 print(f"Размер датасета: {df.shape}")
@@ -372,16 +357,16 @@ y_test_binary = mlb.transform(y_test)
 
 print(f"Количество классов после преобразования: {len(mlb.classes_)}")
 print(f"Форма бинарных меток для обучения: {y_train_binary.shape}")
-with open('label_binarizer.pkl', 'wb') as f:
+with open(os.path.join('..', '..', 'models', 'label_binarizer.pkl'), 'wb') as f:
     pickle.dump(mlb, f)
 
 classifier = BertClassifier(
-    model_path="DeepPavlov/rubert-base-cased", # или другая подходящая модель для русского языка
+    model_path="DeepPavlov/rubert-base-cased",
     tokenizer_path="DeepPavlov/rubert-base-cased",
-    n_classes=len(mlb.classes_),  # количество уникальных классов
+    n_classes=len(mlb.classes_),
     epochs=3,
-    model_save_path='../../models/rubert_hackothon',
-    tokenizer_save_path='../../models/rubert_hackothon_tokenizer'
+    model_save_path=os.path.join('..', '..', 'models', 'rubert_hackothon'),
+    tokenizer_save_path=os.path.join('..', '..', 'models', 'rubert_hackothon_tokenizer')
 )
 
 # Подготовка данных
@@ -408,161 +393,3 @@ for text, pred_indices in zip(texts_to_predict, predictions):
     else:
         print(f"Текст: {text}")
         print("Текст не относится ни к одному из классов")
-
-
-# In[27]:
-
-
-# import pandas as pd
-# from sklearn.model_selection import train_test_split
-# import numpy as np
-
-# # 1. Подготовка данных
-# # Предположим, что `dataset` - это ваш датафрейм с колонками "Текст сообщения" и "Название категории"
-
-# # Создаем числовые метки для категорий
-# label_mapping = {cat: i for i, cat in enumerate(result_df['class'].unique())}
-# dataset['label'] = dataset['Название категории'].map(label_mapping)
-
-# # Разделяем данные на обучающую и валидационную выборки
-# X_train, X_valid, y_train, y_valid = train_test_split(
-#     dataset['Текст сообщения'].tolist(), 
-#     dataset['label'].tolist(),
-#     test_size=0.2,
-#     random_state=42,
-#     stratify=dataset['label']  # Для сохранения распределения меток в выборках
-# )
-
-# # 2. Инициализация модели
-# # Вы можете использовать предобученную модель BERT
-# model_path = "DeepPavlov/rubert-base-cased"  # или другую подходящую модель
-# tokenizer_path = "DeepPavlov/rubert-base-cased"
-# n_classes = len(label_mapping)  # Количество уникальных категорий
-
-# classifier = BertClassifier(
-#     model_path=model_path,
-#     tokenizer_path=tokenizer_path,
-#     n_classes=n_classes,
-#     epochs=5  # Можете настроить количество эпох
-# )
-
-# # 3. Подготовка данных для обучения
-# classifier.preparation(X_train, y_train, X_valid, y_valid)
-
-# # 4. Обучение модели
-# classifier.train()
-
-# # 5. После обучения можно использовать модель для предсказаний
-# # Например, для первых 5 сообщений:
-# sample_texts = dataset['Текст сообщения'].head(5).tolist()
-# predicted_categories = classifier.predict(sample_texts)
-
-# # Преобразование числовых меток обратно в названия категорий
-# reverse_mapping = {i: cat for cat, i in label_mapping.items()}
-# predicted_category_names = [reverse_mapping.get(pred-1) for pred in predicted_categories]
-
-# print("Предсказанные категории:", predicted_category_names)
-
-
-# In[28]:
-
-
-# import pandas as pd
-# import torch
-# import numpy as np
-# from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-# from transformers import BertForSequenceClassification, BertTokenizer
-
-# # 1. Загрузка обученной модели и токенайзера
-# model_path = 'tiny_bert_44cat'
-# tokenizer_path = 'tiny_bert_44cat_tokenizer'
-
-# # Создаем экземпляр классификатора
-# classifier = BertClassifier(
-#     model_path=model_path,
-#     tokenizer_path=tokenizer_path,
-#     n_classes=6,
-# )
-
-# # Загружаем модель и токенайзер
-# classifier.load_model()
-
-# # 2. Подготовка тестового датасета
-# # Если у вас еще нет тестовой выборки, можно создать ее из имеющегося датасета
-# from sklearn.model_selection import train_test_split
-
-# # Создадим маппинг для категорий
-# categories = dataset['Название категории'].unique()
-# label_mapping = {cat: i for i, cat in enumerate(categories)}
-# reverse_mapping = {i: cat for i, cat in label_mapping.items()}
-
-# # Разделим данные на обучающую и тестовую выборки (если еще не разделены)
-# _, X_test, _, y_test = train_test_split(
-#     dataset['Текст сообщения'].tolist(),
-#     dataset['Название категории'].map(label_mapping).tolist(),
-#     test_size=0.2,
-#     random_state=42,
-#     stratify=dataset['Название категории'].map(label_mapping)
-# )
-
-# # 3. Оценка модели на тестовой выборке
-# # Предсказания для всех тестовых примеров
-# all_predictions = []
-# for text in X_test:
-#     # predict возвращает топ-3 категории
-#     pred_indices = classifier.predict([text])
-#     # Берем только первую (самую вероятную) категорию
-#     all_predictions.append(pred_indices[0] - 1)  # Вычитаем 1, т.к. predict добавляет 1
-
-# # 4. Вычисление метрик
-# accuracy = accuracy_score(y_test, all_predictions)
-# report = classification_report(y_test, all_predictions, target_names=categories)
-# conf_matrix = confusion_matrix(y_test, all_predictions)
-
-# print(f"Точность модели: {accuracy:.4f}")
-# print("\nОтчет о классификации:")
-# print(report)
-
-# print("\nМатрица ошибок:")
-# print(conf_matrix)
-
-# # 5. Визуализация матрицы ошибок (опционально)
-# import matplotlib.pyplot as plt
-# import seaborn as sns
-
-# plt.figure(figsize=(10, 8))
-# sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', 
-#             xticklabels=categories, yticklabels=categories)
-# plt.xlabel('Предсказанные значения')
-# plt.ylabel('Истинные значения')
-# plt.title('Матрица ошибок')
-# plt.tight_layout()
-# plt.savefig('confusion_matrix.png')
-# plt.show()
-
-
-# In[29]:
-
-
-# original_categories = dataset['Название категории'].unique()
-# label_mapping = {cat: i for i, cat in enumerate(original_categories)}
-# reverse_mapping = {i: cat for i, cat in label_mapping.items()}
-
-# print("Маппинг категорий:")
-# for i, cat in sorted(reverse_mapping.items()):
-#     print(f"Категория {i}: {cat}")
-
-
-# In[30]:
-
-
-# classifier = BertClassifier(
-#     model_path=model_path,
-#     tokenizer_path=tokenizer_path,
-#     n_classes=6,
-# )
-
-# # Загружаем модель и токенайзер
-# classifier.load_model()
-# classifier.predict('Сегодня запланирована встреча председателя госдумы и представителей регионов')
-
