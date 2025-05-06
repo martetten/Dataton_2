@@ -6,7 +6,7 @@
 # In[51]:
 
 
-pip install -r requirements.txt
+# pip install -r requirements.txt
 
 
 # In[52]:

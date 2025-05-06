@@ -6,7 +6,7 @@
 # In[41]:
 
 
-pip install -r requirements.txt
+# pip install -r requirements.txt
 
 
 # In[42]:
@@ -372,11 +372,6 @@ for i in range(10):
 
 # Изменим значение остановки, чтобы она происходила уже после первого ухудшения
 
-# In[70]:
-
-
-run_dir = model_dir / "training_runs" / f"run_{datetime.now().strftime('%Y-%m-%d_%H-%M')}"
-run_dir.mkdir(parents=True, exist_ok=True)
 
 
 # In[71]:
