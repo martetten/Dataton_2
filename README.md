@@ -88,8 +88,8 @@ pip install -r requirements.txt
 Запустить Flask приложения  
 
 ```bash
-cd src/app/
-python app.py
+ python -m src.app.app
+
 ```
 #### Вариант 2
 
