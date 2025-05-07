@@ -59,6 +59,9 @@
 !!!__**Предварительно необходимо добавить модели обученные в результате выполнения
 скрипта [bert_train_test.py](src%2Fscripts%2Fbert_train_test.py) или ноутбука [bert_train_test.ipynb](notebooks%2Fbert_train_test.ipynb) в папку models**__ !!!
 
+Полный перечень моделей https://drive.google.com/file/d/1ndk8b71SDdTmlcWwMbZjYdUA5VqpAGlk/view?usp=sharing
+Финальная модель в папке "ML_BERT"
+
 ### I. Запуск приложения
 #### Вариант 1
 
